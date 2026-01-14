@@ -239,6 +239,7 @@ class Body {
 class Ball extends Body{
     constructor(x,y,r,m) {
         super();
+        this.pos = new Vector(x, y);
         this.comp = [new Circle(x, y, r)];
         this.m = m
         if (this.m === 0) {
@@ -258,18 +259,12 @@ class Ball extends Body{
         
     }
 
-    // display() {
-    //     this.vel.drawVector(this.pos.x, this.pos.y, 10, "green");
-    //     ctx.fillStyle = "black";
-    //     ctx.fillText("m = " + this.m, this.pos.x - 10, this.pos.y - 5);
-    //     ctx.fillText("e = " + this.elasticity, this.pos.x - 10, this.pos.y + 5);
-    // }
-
     reposition() {
         this.acc = this.acc.unit().multiply(this.acceleration);
         this.vel = this.vel.add(this.acc);
         this.vel = this.vel.multiply(1 - friction);
-        this.comp[0].pos = this.comp[0].pos.add(this.vel);
+        this.pos = this.pos.add(this.vel);
+        this.comp[0].pos = this.pos;
     }
 
     keyControl() {
@@ -498,8 +493,8 @@ class CollData {
 
     penRes() {
         let penResolution = this.normal.multiply(this.pen / (this.o1.inv_m + this.o2.inv_m));
-        this.o1.comp[0].pos = this.o1.comp[0].pos.add(penResolution.multiply(this.o1.inv_m));
-        this.o2.comp[0].pos = this.o2.comp[0].pos.add(penResolution.multiply(-this.o2.inv_m));
+        this.o1.pos = this.o1.pos.add(penResolution.multiply(this.o1.inv_m));
+        this.o2.pos = this.o2.pos.add(penResolution.multiply(-this.o2.inv_m));
     }
 
     collRes() {    
@@ -878,19 +873,26 @@ for (let i = 0; i < 11; i++) {
 
     if (i%4 === 0) {
         let obj = new Capsule(x0, y0, x1, y1, r, m);
+        console.log(obj.pos);
     }
 
     if (i%4 === 1) {
         let obj = new Box(x0, y0, x1, y1, r, m);
+        console.log(obj.pos);
     }
 
     if (i%4 === 2) {
         let obj = new Ball(x0, y0, r, m);
+        console.log(obj.pos);
     }
 
     if (i%4 === 3) {
         let obj = new Star(x0, y0, r, m);
+        console.log(obj.pos);
     }
+    console.log(BODIES);
+    console.log(i);
+    
 }
 
 
@@ -898,3 +900,36 @@ let playerBall = new Ball(canvas.clientWidth / 2, canvas.clientHeight / 2, 50, 1
 playerBall.player = true;
 
 requestAnimationFrame(mainloop);
+
+function renderPropertiesPanel() {
+    const panel = document.getElementById('properties-panel');
+    panel.innerHTML = ''; // Clear previous content
+
+    BODIES.forEach((body, idx) => {
+        const bodyDiv = document.createElement('div');
+        bodyDiv.style.border = '1px solid #ccc';
+        bodyDiv.style.margin = '8px';
+        bodyDiv.style.padding = '8px';
+
+        bodyDiv.innerHTML = `
+            <strong>Body ${idx} (${body.constructor.name})</strong><br>
+            Position: <input type="number" value="${body.pos.x}" id="posx-${idx}" style="width:60px;">,
+            <input type="number" value="${body.pos.y}" id="posy-${idx}" style="width:60px;"><br>
+            Mass: <input type="number" value="${body.m}" id="mass-${idx}" style="width:60px;"><br>
+            <button id="apply-${idx}">Apply</button>
+        `;
+
+        panel.appendChild(bodyDiv);
+
+        document.getElementById(`apply-${idx}`).onclick = () => {
+            body.pos.x = parseFloat(document.getElementById(`posx-${idx}`).value);
+            body.pos.y = parseFloat(document.getElementById(`posy-${idx}`).value);
+            body.m = parseFloat(document.getElementById(`mass-${idx}`).value);
+            body.inv_m = body.m === 0 ? 0 : 1 / body.m;
+        };
+    });
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    renderPropertiesPanel();
+});
