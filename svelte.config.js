@@ -16,7 +16,7 @@ const config = {
 		}),
 
 		paths: {
-			base: process.env.NODE_ENV === 'production' ? '2D-Physics-Simulation' : '',
+			base: process.env.NODE_ENV === 'production' ? '/2D-Physics-Simulation' : '',
 		}
 	}
 };
