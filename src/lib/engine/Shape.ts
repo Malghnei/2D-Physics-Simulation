@@ -78,7 +78,7 @@ export class Rectangle implements Shape {
         this.length = this.vertex[1].subtract(this.vertex[0]).magnitude();
         this.width = w;
         this.vertex[2] = this.vertex[1].add(this.dir.normal().multiply(this.width));
-        this.vertex[3] = this.vertex[2].add(this.dir.normal().multiply(-this.length));
+        this.vertex[3] = this.vertex[2].add(this.dir.multiply(-this.length));
         this.pos = this.vertex[0].add(this.dir.multiply(this.length / 2)).add(this.dir.normal().multiply(this.width / 2));
         this.angle = 0;
         this.rotMat = new Matrix(2, 2);
