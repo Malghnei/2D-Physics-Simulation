@@ -2,11 +2,24 @@
     import { onMount } from "svelte";
 
     let canvas: HTMLCanvasElement;
-	let friction = 0.1;
+	let friction = 0.01;
 	let bodies: Body[] = [];
 	let collisions: CollData[] = [];
 	let collCounter = 0;
 	let inputState = { LEFT: false, UP: false, RIGHT: false, DOWN: false };
+
+	let shapeAmount = 11;
+	let playerSpeed = 0.5;
+	let playerMass = 1;
+
+	$: {
+		let p = bodies.find(b => b.player);
+		if (p) {
+			p.acceleration = playerSpeed;
+			p.m = playerMass;
+			p.inv_m = playerMass === 0 ? 0 : 1 / playerMass;
+		}
+	}
 
 
     // --- Interfaces & Types ---
@@ -289,7 +302,7 @@
 
 			this.vel = new Vector(0, 0);
 			this.acc = new Vector(0, 0);
-			this.acceleration = 1;
+			this.acceleration = 0.5;
 			this.angVel = 0;
 			this.player = false;
 		}
@@ -924,16 +937,16 @@
 		if (e.key === 'ArrowRight') inputState.RIGHT = false;
 	}
 
-    onMount(() => {
-        console.log('Hello World');
-        const ctx = canvas.getContext('2d')!;
-
+    function generateSimulation() {
+        if (!canvas) return;
+        bodies = [];
+        
         bodies.push(new Wall(0, 0, canvas.clientWidth, 0));
 		bodies.push(new Wall(canvas.clientWidth, 0, canvas.clientWidth, canvas.clientHeight));
 		bodies.push(new Wall(canvas.clientWidth, canvas.clientHeight, 0, canvas.clientHeight));
 		bodies.push(new Wall(0, canvas.clientHeight, 0, 0));
 
-        for (let i = 0; i < 11; i++) {
+        for (let i = 0; i < shapeAmount; i++) {
 			let x0 = randInt(100, canvas.clientWidth - 100);
 			let y0 = randInt(100, canvas.clientHeight - 100);
 			let x1 = x0 + randInt(-100, 100);
@@ -948,9 +961,17 @@
 		}
 
 
-        let playerBall = new Ball(canvas.clientWidth / 2, canvas.clientHeight / 2, 50, 1);
+        let playerBall = new Ball(canvas.clientWidth / 2, canvas.clientHeight / 2, 50, playerMass);
         playerBall.player = true;
+        playerBall.acceleration = playerSpeed;
         bodies.push(playerBall);
+    }
+
+    onMount(() => {
+        console.log('Hello World');
+        const ctx = canvas.getContext('2d')!;
+
+        generateSimulation();
 
         // Animation loop
         let frameId: number;
@@ -1024,8 +1045,28 @@
 		<p>
 			<a href="https://github.com/Malghnei/2D-Physics-Simulation">Back to Github.</a>
 			<br />
-			Generates 11 shapes with random attributes, the red one is the controllable one (with arrow keys).
+			Generates {shapeAmount} shapes with random attributes, the red one is the controllable one (with arrow keys).
 		</p>
+	</div>
+
+	<div class="controls-panel">
+		<label>
+			Friction: {friction.toFixed(3)}
+			<input type="range" min="0" max="0.1" step="0.001" bind:value={friction}>
+		</label>
+		<label>
+			Player Speed: {playerSpeed.toFixed(2)}
+			<input type="range" min="0.1" max="2" step="0.1" bind:value={playerSpeed}>
+		</label>
+		<label>
+			Player Mass: {playerMass}
+			<input type="range" min="0" max="20" step="1" bind:value={playerMass}>
+		</label>
+		<label>
+			Shapes to Spawn: {shapeAmount}
+			<input type="number" min="0" max="100" bind:value={shapeAmount}>
+		</label>
+		<button on:click={generateSimulation}>Refresh Generation</button>
 	</div>
 
 	<canvas bind:this={canvas} width="1000" height="600"></canvas>
@@ -1034,20 +1075,6 @@
 		<p>
 			Made by Malik Alghneimin. Credits to <a href="https://youtube.com/playlist?list=PLo6lBZn6hgca1T7cNZXpiq4q395ljbEI_&si=kQsmeopRjL0EchDU">Danielstuts</a> for the physics engine.
 		</p>
-	</div>
-
-	<div id="properties-panel">
-		{#each bodies as body, idx}
-			{#if body.m > 0 || body.player} <div class="prop-card">
-					<strong>Body {idx} ({body.constructor.name})</strong><br />
-					Position:
-					<input type="number" bind:value={body.pos.x} style="width:60px;">,
-					<input type="number" bind:value={body.pos.y} style="width:60px;"><br />
-					Mass:
-					<input type="number" bind:value={body.m} on:input={() => body.inv_m = body.m === 0 ? 0 : 1 / body.m} style="width:60px;"><br />
-					</div>
-			{/if}
-		{/each}
 	</div>
 </div>
 
@@ -1064,16 +1091,37 @@
 		padding: 20px;
 	}
 
-	#properties-panel {
+	.controls-panel {
 		display: flex;
-		flex-wrap: wrap;
-		gap: 10px;
-		margin-top: 20px;
+		gap: 20px;
+		justify-content: center;
+		align-items: center;
+		margin-bottom: 20px;
+		padding: 15px;
+		background: #fdfdfd;
+		border-radius: 8px;
+		border: 1px solid #ccc;
 	}
 
-	.prop-card {
-		border: 1px solid #ccc;
-		padding: 8px;
-		background: #f9f9f9;
+	.controls-panel label {
+		display: flex;
+		flex-direction: column;
+		font-size: 0.9em;
+		font-weight: bold;
+		min-width: 120px;
+	}
+
+	.controls-panel button {
+		padding: 8px 16px;
+		font-weight: bold;
+		cursor: pointer;
+		background: #007bff;
+		color: white;
+		border: none;
+		border-radius: 4px;
+	}
+	
+	.controls-panel button:hover {
+		background: #0056b3;
 	}
 </style>
