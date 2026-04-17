@@ -576,8 +576,20 @@
 
         penRes() {
             let penResolution = this.normal.multiply(this.pen / (this.o1.inv_m + this.o2.inv_m));
-            this.o1.pos = this.o1.pos.add(penResolution.multiply(this.o1.inv_m));
-            this.o2.pos = this.o2.pos.add(penResolution.multiply(-this.o2.inv_m));
+            
+            let shift1 = penResolution.multiply(this.o1.inv_m);
+            this.o1.pos = this.o1.pos.add(shift1);
+            this.o1.comp.forEach(comp => {
+                comp.pos = comp.pos.add(shift1);
+                if (comp.getVertices) comp.getVertices();
+            });
+
+            let shift2 = penResolution.multiply(-this.o2.inv_m);
+            this.o2.pos = this.o2.pos.add(shift2);
+            this.o2.comp.forEach(comp => {
+                comp.pos = comp.pos.add(shift2);
+                if (comp.getVertices) comp.getVertices();
+            });
         }
 
         collRes() {
@@ -599,6 +611,9 @@
 
             let relVel = closVel1.subtract(closVel2);
             let sepVel = Vector.dot(relVel, this.normal);
+            
+            if (sepVel > 0) return;
+            
             let new_sepVel = -sepVel * Math.min(this.o1.elasticity, this.o2.elasticity);
             let vsep_diff = new_sepVel - sepVel;
 
@@ -944,7 +959,7 @@
             if (!ctx) return;
             ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
             collisions = [];
-            ctx.fillText("Collision: " + collCounter, 50, 50);
+            collCounter = 0;
 
             bodies.forEach((b) => {
                 b.draw(ctx);
@@ -957,6 +972,8 @@
 
             bodies.forEach((b, index) => {
                 for (let bodyPair = index + 1; bodyPair < bodies.length; bodyPair++) {
+                    if (bodies[index].m === 0 && bodies[bodyPair].m === 0) continue;
+
                     let bestSat: SatResult = {
                         pen: null,
                         axis: null,
@@ -967,14 +984,14 @@
                         for (let o2comp = 0; o2comp < bodies[bodyPair].comp.length; o2comp++) {
                             let result = sat(bodies[index].comp[o1comp], bodies[bodyPair].comp[o2comp]);
                             if (result.pen !== null && (bestSat.pen === null || result.pen > bestSat.pen)) {
-                                bestSat = sat(bodies[index].comp[o1comp], bodies[bodyPair].comp[o2comp]);
-                                collCounter++;
+                                bestSat = result;
                             }
                         }
                     }
 
                     if (bestSat.pen !== null && bestSat.axis && bestSat.vertex) {
                         collisions.push(new CollData(bodies[index], bodies[bodyPair], bestSat.axis, bestSat.pen, bestSat.vertex));
+                        collCounter++;
                     }
                 }
             });
@@ -983,6 +1000,10 @@
                 c.penRes();
                 c.collRes();
             });
+
+            ctx.fillStyle = "black";
+            ctx.font = "16px sans-serif";
+            ctx.fillText("Collision: " + collCounter, 50, 50);
 
             frameId = requestAnimationFrame(mainloop);
         };
