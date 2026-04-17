@@ -411,7 +411,7 @@
             this.vel = this.vel.add(this.acc);
             this.vel = this.vel.multiply(1 - friction);
             rect.pos = rect.pos.add(this.vel);
-            this.angVel *= 1;
+            this.angVel *= 1 - friction;
             rect.angle += this.angVel;
             rect.getVertices();
             this.comp[1].pos = this.comp[0].pos.add(rect.dir.multiply(-rect.length / 2));
@@ -471,7 +471,7 @@
             this.vel = this.vel.add(this.acc);
             this.vel = this.vel.multiply(1 - friction);
             this.comp[0].pos = this.comp[0].pos.add(this.vel);
-            this.angVel *= 1;
+            this.angVel *= 1 - friction;
             rect.angle += this.angVel;
             rect.getVertices();
         }
@@ -538,7 +538,7 @@
             this.acc = this.acc.unit().multiply(this.acceleration);
             this.vel = this.vel.add(this.acc);
             this.vel = this.vel.multiply(1 - friction);
-            this.angVel *= 1;
+            this.angVel *= 1 - friction;
             tri1.pos = this.comp[0].pos.add(this.vel);
             tri1.angle += this.angVel;
             tri1.getVertices();
