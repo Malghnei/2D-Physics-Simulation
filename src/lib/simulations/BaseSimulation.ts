@@ -2,7 +2,7 @@ export abstract class BaseSimulation {
     protected canvas: HTMLCanvasElement;
     protected ctx: CanvasRenderingContext2D;
     protected frameId: number | null = null;
-    protected isRunning = false;
+    public isRunning = false;
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
@@ -17,12 +17,37 @@ export abstract class BaseSimulation {
     }
 
     stop() {
+        this.pause();
+        this.onStop();
+    }
+    
+    pause() {
         this.isRunning = false;
         if (this.frameId !== null) {
             cancelAnimationFrame(this.frameId);
             this.frameId = null;
         }
-        this.onStop();
+    }
+    
+    resume() {
+        if (this.isRunning) return;
+        this.isRunning = true;
+        this.loop();
+    }
+    
+    togglePause() {
+        if (this.isRunning) {
+            this.pause();
+        } else {
+            this.resume();
+        }
+    }
+    
+    reset() {
+        this.pause();
+        this.refresh();
+        // optionally resume or just draw one frame
+        this.draw();
     }
 
     protected loop = () => {

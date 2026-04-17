@@ -38,23 +38,22 @@
         if (simInstance) {
             simInstance.stop();
         }
-        currentMode = newMode;
         
-        // Timeout 0 ensures canvas is bound if it was previously cleaned up
-        setTimeout(() => {
-            if (!canvas) return;
-            switch(newMode) {
-                case 'sandbox': simInstance = new SandboxSim(canvas); break;
-                case 'projectile': simInstance = new ProjectileSim(canvas); break;
-                case 'boxslope': simInstance = new BoxSlopeSim(canvas); break;
-                case 'crt': simInstance = new CRTSim(canvas); break;
-                case 'diffraction': simInstance = new DiffractionSim(canvas); break;
-            }
+        if (!canvas) return;
+        
+        switch(newMode) {
+            case 'sandbox': simInstance = new SandboxSim(canvas); break;
+            case 'projectile': simInstance = new ProjectileSim(canvas); break;
+            case 'boxslope': simInstance = new BoxSlopeSim(canvas); break;
+            case 'crt': simInstance = new CRTSim(canvas); break;
+            case 'diffraction': simInstance = new DiffractionSim(canvas); break;
+        }
 
-            if (simInstance) {
-                simInstance.start();
-            }
-        }, 0);
+        currentMode = newMode;
+
+        if (simInstance) {
+            simInstance.reset();
+        }
     }
 
     onMount(() => {
@@ -70,11 +69,11 @@
 
 <div class="container">
     <header class="header">
-        <h1>2D Physics Simulation Toolkit</h1>
+        <h1>2D Physics Simulation Shenanigans</h1>
         <div class="nav-tabs">
             {#each modes as mode}
                 <button 
-                    class:active={currentMode === mode.id} 
+                    class="tab-btn {currentMode === mode.id ? 'active' : ''}" 
                     on:click={() => switchMode(mode.id)}
                 >
                     {mode.name}

@@ -9,9 +9,47 @@
             simInstance.refresh();
         }
     }
+    
+    function togglePause() {
+        if (simInstance && typeof simInstance.togglePause === 'function') {
+            simInstance.togglePause();
+            // trigger svelte reactivity
+            simInstance = simInstance;
+        }
+    }
+    
+    function resetSim() {
+        if (simInstance && typeof simInstance.reset === 'function') {
+            simInstance.reset();
+            simInstance = simInstance;
+        }
+    }
+
+    function startSim() {
+        if (simInstance && typeof simInstance.start === 'function') {
+            // start handles setting isRunning and looping
+            simInstance.start();
+            simInstance = simInstance;
+        }
+    }
 </script>
 
 <div class="controls-panel">
+    <div class="playback-controls">
+        {#if currentMode !== 'diffraction'}
+            {#if !simInstance.isRunning}
+                <button class="btn-play" on:click={togglePause}>▶ Play</button>
+            {:else}
+                <button class="btn-pause" on:click={togglePause}>⏸ Pause</button>
+            {/if}
+            <button class="btn-reset" on:click={resetSim}>↺ Restart</button>
+        {:else}
+            <button class="btn-reset" on:click={refresh}>Generate</button>
+        {/if}
+    </div>
+
+    <div class="separator"></div>
+
     {#if currentMode === 'sandbox'}
         <label>
             Friction: {EngineState.friction.toFixed(3)}
@@ -46,7 +84,6 @@
             Angle (deg): {simInstance.angle}
             <input type="range" min="-90" max="90" step="1" bind:value={simInstance.angle} on:change={refresh}>
         </label>
-        <button on:click={refresh}>Launch / Reset</button>
     {/if}
 
     {#if currentMode === 'boxslope'}
@@ -58,15 +95,25 @@
             Friction Coeff: {simInstance.frictionCoefficient.toFixed(2)}
             <input type="range" min="0" max="1" step="0.05" bind:value={simInstance.frictionCoefficient} on:change={refresh}>
         </label>
-        <button on:click={refresh}>Reset Slide</button>
     {/if}
 
     {#if currentMode === 'crt'}
         <label>
+            Length of Plates (cm): {simInstance.length}
+            <input type="range" min="1" max="30" step="1" bind:value={simInstance.length} on:change={refresh}>
+        </label>
+        <label>
+            Dist. Between (cm): {simInstance.distanceBetween}
+            <input type="range" min="1" max="30" step="1" bind:value={simInstance.distanceBetween} on:change={refresh}>
+        </label>
+        <label>
             Potential Diff (V): {simInstance.potentialDifference}
             <input type="range" min="100" max="1000" step="10" bind:value={simInstance.potentialDifference} on:change={refresh}>
         </label>
-        <button on:click={refresh}>Refresh Tracer</button>
+        <label>
+            Initial Speed: {(simInstance.initialSpeed / 1000000).toFixed(1)}M m/s
+            <input type="range" min="100000" max="5000000" step="100000" bind:value={simInstance.initialSpeed} on:change={refresh}>
+        </label>
     {/if}
 
     {#if currentMode === 'diffraction'}
@@ -99,6 +146,19 @@
         border: 1px solid #ccc;
     }
 
+    .playback-controls {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .separator {
+        width: 2px;
+        height: 40px;
+        background: #ddd;
+        margin: 0 5px;
+    }
+
     .controls-panel label {
         display: flex;
         flex-direction: column;
@@ -111,14 +171,31 @@
         padding: 8px 16px;
         font-weight: bold;
         cursor: pointer;
-        background: #007bff;
         color: white;
         border: none;
         border-radius: 4px;
         height: min-content;
+        transition: transform 0.1s, background 0.1s;
     }
     
-    .controls-panel button:hover {
+    .controls-panel button:active {
+        transform: scale(0.95);
+    }
+
+    .btn-play { background: #28a745; }
+    .btn-play:hover { background: #218838; }
+    
+    .btn-pause { background: #ffc107; color: black !important; }
+    .btn-pause:hover { background: #e0a800; }
+
+    .btn-reset { background: #17a2b8; }
+    .btn-reset:hover { background: #138496; }
+
+    /* Default buttons */
+    .controls-panel > button {
+        background: #007bff;
+    }
+    .controls-panel > button:hover {
         background: #0056b3;
     }
 
