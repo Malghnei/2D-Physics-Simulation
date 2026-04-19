@@ -32,6 +32,14 @@
             simInstance = simInstance;
         }
     }
+    function randomizeSim() {
+        if (simInstance && typeof simInstance.randomize === 'function') {
+            simInstance.randomize();
+            simInstance = simInstance; // trigger reactivity
+        } else {
+            refresh();
+        }
+    }
 </script>
 
 <div class="controls-panel">
@@ -44,7 +52,7 @@
             {/if}
             <button class="btn-reset" on:click={resetSim}>↺ Restart</button>
         {:else}
-            <button class="btn-reset" on:click={refresh}>Generate</button>
+            <button class="btn-reset" on:click={randomizeSim}>Random</button>
         {/if}
     </div>
 

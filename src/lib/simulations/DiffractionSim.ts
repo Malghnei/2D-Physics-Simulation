@@ -12,6 +12,13 @@ export class DiffractionSim extends BaseSimulation {
         this.draw();
     }
 
+    randomize() {
+        this.wavelength = Math.floor(Math.random() * (800 - 300 + 1)) + 300;
+        this.spacing = Math.floor(Math.random() * (100 - 10 + 1)) + 10;
+        this.distance = Math.random() * (1 - 0.01) + 0.01;
+        this.refresh();
+    }
+
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.clientWidth, this.canvas.clientHeight);
         
@@ -20,10 +27,11 @@ export class DiffractionSim extends BaseSimulation {
         const dist = this.distance;
         
         let x = (wl / dist) * sp * 1e12; 
+        if (x < 0.1) x = 0.1; // Prevent infinite loops if values get too small
 
         let middle = this.canvas.clientWidth / 2;
-        let yStart = 50;
-        let height = 500;
+        let yStart = 0;
+        let height = this.canvas.clientHeight;
 
         let i = 1;
 
@@ -35,10 +43,9 @@ export class DiffractionSim extends BaseSimulation {
             this.drawGradient(middle - x * (i + 1), yStart, x, height, "white", "black");
 
             i += 2;
-            if ((middle + x * i) > this.canvas.clientWidth) {
+            if ((middle + x * (i - 1)) > this.canvas.clientWidth) {
                 break;
             }
-            if (i > 100) break; // Sanity limit
         }
     }
 

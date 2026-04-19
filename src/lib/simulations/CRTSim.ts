@@ -69,7 +69,7 @@ export class CRTSim extends BaseSimulation {
         let pdistance = this.distanceBetween * 20;
 
         // Draw plates
-        this.ctx.fillStyle = "yellow";
+        this.ctx.fillStyle = "red";
         this.ctx.fillRect(20, middle - pdistance/2 - 5, plength, 5); // Top plate
         this.ctx.fillRect(20, middle + pdistance/2, plength, 5); // Bottom plate
 
