@@ -60,20 +60,32 @@
 
     {#if currentMode === 'sandbox'}
         <label>
-            Friction: {EngineState.friction.toFixed(3)}
-            <input type="range" min="0" max="0.1" step="0.001" bind:value={EngineState.friction}>
+            <span>Friction</span>
+            <div class="input-group">
+                <input type="number" min="0" max="0.1" step="0.001" bind:value={EngineState.friction}>
+                <input type="range" min="0" max="0.1" step="0.001" bind:value={EngineState.friction}>
+            </div>
         </label>
         <label>
-            Player Speed: {simInstance.playerSpeed.toFixed(2)}
-            <input type="range" min="0.1" max="2" step="0.1" bind:value={simInstance.playerSpeed}>
+            <span>Player Speed</span>
+            <div class="input-group">
+                <input type="number" min="0.1" max="2" step="0.1" bind:value={simInstance.playerSpeed}>
+                <input type="range" min="0.1" max="2" step="0.1" bind:value={simInstance.playerSpeed}>
+            </div>
         </label>
         <label>
-            Player Mass: {simInstance.playerMass}
-            <input type="range" min="0" max="20" step="1" bind:value={simInstance.playerMass} on:change={refresh}>
+            <span>Player Mass</span>
+            <div class="input-group">
+                <input type="number" min="0" max="20" step="1" bind:value={simInstance.playerMass} on:change={refresh}>
+                <input type="range" min="0" max="20" step="1" bind:value={simInstance.playerMass} on:change={refresh}>
+            </div>
         </label>
         <label>
-            Shapes to Spawn: {simInstance.shapeAmount}
-            <input type="number" min="0" max="100" bind:value={simInstance.shapeAmount} on:change={refresh}>
+            <span>Shapes to Spawn</span>
+            <div class="input-group">
+                <input type="number" min="0" max="100" step="1" bind:value={simInstance.shapeAmount} on:change={refresh}>
+                <input type="range" min="0" max="100" step="1" bind:value={simInstance.shapeAmount} on:change={refresh}>
+            </div>
         </label>
         <button on:click={refresh}>Respawn Shapes</button>
         <p class="hint">Use Arrow Keys to move the red shape.</p>
@@ -81,61 +93,97 @@
 
     {#if currentMode === 'projectile'}
         <label>
-            Initial Velocity: {simInstance.initialVelocity}
-            <input type="range" min="10" max="500" step="1" bind:value={simInstance.initialVelocity} on:change={refresh}>
+            <span>Initial Velocity</span>
+            <div class="input-group">
+                <input type="number" min="10" max="500" step="1" bind:value={simInstance.initialVelocity} on:change={refresh}>
+                <input type="range" min="10" max="500" step="1" bind:value={simInstance.initialVelocity} on:change={refresh}>
+            </div>
         </label>
         <label>
-            Start Height: {simInstance.startHeight}
-            <input type="range" min="0" max="500" step="10" bind:value={simInstance.startHeight} on:change={refresh}>
+            <span>Start Height</span>
+            <div class="input-group">
+                <input type="number" min="0" max="500" step="10" bind:value={simInstance.startHeight} on:change={refresh}>
+                <input type="range" min="0" max="500" step="10" bind:value={simInstance.startHeight} on:change={refresh}>
+            </div>
         </label>
         <label>
-            Angle (deg): {simInstance.angle}
-            <input type="range" min="-90" max="90" step="1" bind:value={simInstance.angle} on:change={refresh}>
+            <span>Angle (deg)</span>
+            <div class="input-group">
+                <input type="number" min="-90" max="90" step="1" bind:value={simInstance.angle} on:change={refresh}>
+                <input type="range" min="-90" max="90" step="1" bind:value={simInstance.angle} on:change={refresh}>
+            </div>
         </label>
     {/if}
 
     {#if currentMode === 'boxslope'}
         <label>
-            Angle (deg): {simInstance.angle}
-            <input type="range" min="10" max="80" step="1" bind:value={simInstance.angle} on:change={refresh}>
+            <span>Angle (deg)</span>
+            <div class="input-group">
+                <input type="number" min="10" max="80" step="1" bind:value={simInstance.angle} on:change={refresh}>
+                <input type="range" min="10" max="80" step="1" bind:value={simInstance.angle} on:change={refresh}>
+            </div>
         </label>
         <label>
-            Friction Coeff: {simInstance.frictionCoefficient.toFixed(2)}
-            <input type="range" min="0" max="1" step="0.05" bind:value={simInstance.frictionCoefficient} on:change={refresh}>
+            <span>Friction Coeff</span>
+            <div class="input-group">
+                <input type="number" min="0" max="1" step="0.05" bind:value={simInstance.frictionCoefficient} on:change={refresh}>
+                <input type="range" min="0" max="1" step="0.05" bind:value={simInstance.frictionCoefficient} on:change={refresh}>
+            </div>
         </label>
     {/if}
 
     {#if currentMode === 'crt'}
         <label>
-            Length of Plates (cm): {simInstance.length}
-            <input type="range" min="1" max="30" step="1" bind:value={simInstance.length} on:change={refresh}>
+            <span>Length of Plates (cm)</span>
+            <div class="input-group">
+                <input type="number" min="1" max="30" step="1" bind:value={simInstance.length} on:change={refresh}>
+                <input type="range" min="1" max="30" step="1" bind:value={simInstance.length} on:change={refresh}>
+            </div>
         </label>
         <label>
-            Dist. Between (cm): {simInstance.distanceBetween}
-            <input type="range" min="1" max="30" step="1" bind:value={simInstance.distanceBetween} on:change={refresh}>
+            <span>Dist. Between (cm)</span>
+            <div class="input-group">
+                <input type="number" min="1" max="30" step="1" bind:value={simInstance.distanceBetween} on:change={refresh}>
+                <input type="range" min="1" max="30" step="1" bind:value={simInstance.distanceBetween} on:change={refresh}>
+            </div>
         </label>
         <label>
-            Potential Diff (V): {simInstance.potentialDifference}
-            <input type="range" min="100" max="1000" step="10" bind:value={simInstance.potentialDifference} on:change={refresh}>
+            <span>Potential Diff (V)</span>
+            <div class="input-group">
+                <input type="number" min="100" max="1000" step="10" bind:value={simInstance.potentialDifference} on:change={refresh}>
+                <input type="range" min="100" max="1000" step="10" bind:value={simInstance.potentialDifference} on:change={refresh}>
+            </div>
         </label>
         <label>
-            Initial Speed: {(simInstance.initialSpeed / 1000000).toFixed(1)}M m/s
-            <input type="range" min="100000" max="5000000" step="100000" bind:value={simInstance.initialSpeed} on:change={refresh}>
+            <span>Initial Speed (m/s)</span>
+            <div class="input-group">
+                <input type="number" min="100000" max="5000000" step="100000" bind:value={simInstance.initialSpeed} on:change={refresh}>
+                <input type="range" min="100000" max="5000000" step="100000" bind:value={simInstance.initialSpeed} on:change={refresh}>
+            </div>
         </label>
     {/if}
 
     {#if currentMode === 'diffraction'}
         <label>
-            Wavelength (nm): {simInstance.wavelength}
-            <input type="range" min="300" max="800" step="10" bind:value={simInstance.wavelength} on:change={refresh}>
+            <span>Wavelength (nm)</span>
+            <div class="input-group">
+                <input type="number" min="300" max="800" step="10" bind:value={simInstance.wavelength} on:change={refresh}>
+                <input type="range" min="300" max="800" step="10" bind:value={simInstance.wavelength} on:change={refresh}>
+            </div>
         </label>
         <label>
-            Spacing (nm): {simInstance.spacing}
-            <input type="range" min="10" max="100" step="1" bind:value={simInstance.spacing} on:change={refresh}>
+            <span>Spacing (nm)</span>
+            <div class="input-group">
+                <input type="number" min="10" max="100" step="1" bind:value={simInstance.spacing} on:change={refresh}>
+                <input type="range" min="10" max="100" step="1" bind:value={simInstance.spacing} on:change={refresh}>
+            </div>
         </label>
         <label>
-            Distance (m): {simInstance.distance.toFixed(2)}
-            <input type="range" min="0.01" max="1" step="0.01" bind:value={simInstance.distance} on:change={refresh}>
+            <span>Distance (m)</span>
+            <div class="input-group">
+                <input type="number" min="0.01" max="1" step="0.01" bind:value={simInstance.distance} on:change={refresh}>
+                <input type="range" min="0.01" max="1" step="0.01" bind:value={simInstance.distance} on:change={refresh}>
+            </div>
         </label>
     {/if}
 </div>
@@ -173,6 +221,28 @@
         font-size: 0.9em;
         font-weight: bold;
         min-width: 120px;
+    }
+
+    .controls-panel label > span {
+        margin-bottom: 2px;
+        display: block;
+    }
+
+    .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-top: 4px;
+    }
+    
+    .input-group input[type="number"] {
+        padding: 4px 6px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-family: inherit;
+        font-size: 0.9em;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .controls-panel button {
